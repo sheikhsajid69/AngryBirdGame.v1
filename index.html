@@ -40,7 +40,7 @@
             position: relative;
             width: 600px;
             max-width: 90vw;
-            height: 600px;
+            height: 60vh;
             background: #70C5CE;
             overflow: hidden;
             border: 2px solid #000;
@@ -94,6 +94,7 @@
         #bird-selector {
             margin: 20px;
             text-align: center;
+            display: none; /* Hidden until passcode is correct */
         }
         #bird-selector img {
             width: clamp(40px, 8vw, 50px);
@@ -265,7 +266,7 @@
         const birdSelector = document.getElementById('bird-selector');
         const difficulty = document.getElementById('difficulty');
 
-        let birdY; // Initialize later when container is visible
+        let birdY;
         let velocity = 0;
         let score = 0;
         let pipes = [];
@@ -274,12 +275,28 @@
         let pipeSpeed = 1.5;
         let pipeGap = 250;
 
+        const correctPasscode = "mkcbcmc";
+
         const difficulties = {
             easy: { pipeSpeed: 1.5, pipeGap: 250 },
             normal: { pipeSpeed: 2, pipeGap: 200 },
             hard: { pipeSpeed: 3, pipeGap: 150 }
         };
         let currentDifficulty = 'easy';
+
+        // Passcode prompt function
+        function checkPasscode() {
+            let userInput = prompt("Please enter the passcode to play the game:");
+            if (userInput === correctPasscode) {
+                birdSelector.style.display = 'block'; // Show bird selector if passcode is correct
+            } else {
+                alert("Incorrect passcode! Please try again.");
+                checkPasscode(); // Recursively prompt until correct
+            }
+        }
+
+        // Run passcode check on page load
+        window.onload = checkPasscode;
 
         function setDifficulty(level) {
             if (!gameActive) {
@@ -294,11 +311,11 @@
             bird.style.backgroundRepeat = 'no-repeat';
             bird.style.backgroundSize = 'contain';
             birdSelector.style.display = 'none';
-            gameContainer.style.display = 'block'; // Make container visible
+            gameContainer.style.display = 'block';
             difficulty.style.display = 'inline-block';
-            birdY = gameContainer.clientHeight / 2; // Set birdY after container is visible
-            bird.style.top = `${birdY}px`; // Update bird position
-            bird.style.left = '20px'; // Ensure bird is positioned
+            birdY = gameContainer.clientHeight / 2;
+            bird.style.top = `${birdY}px`;
+            bird.style.left = '20px';
         }
 
         function startGame() {

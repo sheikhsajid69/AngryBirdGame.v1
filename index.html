@@ -13,8 +13,9 @@
             flex-direction: column;
             align-items: center;
             font-family: 'Arial', sans-serif;
-            overflow: hidden;
             height: 100vh;
+            overflow: hidden; /* Prevent scrolling */
+            touch-action: none; /* Prevent default touch behaviors like pinch-zoom */
         }
         #interface {
             width: 100%;
@@ -44,6 +45,7 @@
             overflow: hidden;
             border: 2px solid #000;
             display: none;
+            touch-action: none; /* Ensure touch events work within container */
         }
         .cloud {
             position: absolute;
@@ -73,21 +75,21 @@
         .pipe {
             position: absolute;
             width: 10%;
-            border: 2px solid #666; /* Darker metallic edge */
-            box-shadow: 0 0 8px rgba(255, 255, 255, 0.5); /* Subtle glow */
+            border: 2px solid #666;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
             z-index: 5;
             transition: background-color 0.3s, border-color 0.3s;
         }
         .pipe.top {
-            background: linear-gradient(to bottom, #B0BEC5, #78909C); /* Cool silver gradient */
+            background: linear-gradient(to bottom, #B0BEC5, #78909C);
         }
         .pipe.bottom {
-            background: linear-gradient(to top, #CFD8DC, #90A4AE); /* Warmer silver gradient */
+            background: linear-gradient(to top, #CFD8DC, #90A4AE);
         }
         .pipe.passed {
-            background: #FFD700; /* Gold when passed */
+            background: #FFD700;
             border-color: #FFB300;
-            box-shadow: 0 0 12px rgba(255, 215, 0, 0.7); /* Enhanced glow when passed */
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.7);
         }
         #bird-selector {
             margin: 20px;
@@ -268,7 +270,7 @@
         let score = 0;
         let pipes = [];
         let gameActive = false;
-        let gravity = 0.35; // Medium gravity
+        let gravity = 0.35;
         let pipeSpeed = 1.5;
         let pipeGap = 250;
 
@@ -419,10 +421,11 @@
             if (gameActive) {
                 bird.classList.add('flap');
                 setTimeout(() => bird.classList.remove('flap'), 200);
-                velocity = -10; // Medium flap strength
+                velocity = -10;
             }
         }
 
+        // Spacebar input for desktop
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Space') {
                 e.preventDefault();
@@ -431,8 +434,21 @@
             }
         });
 
+        // Touch input for mobile
+        gameContainer.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Prevent scrolling or zooming
+            if (!gameActive) startGame();
+            else flap();
+        });
+
         bird.style.left = '20px';
         bird.style.top = `${birdY}px`;
+
+        gameContainer.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    if (!gameActive) startGame();
+    else flap();
+});
     </script>
 </body>
 </html>

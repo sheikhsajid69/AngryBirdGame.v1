@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="https://www.freeiconspng.com/thumbs/birds-png/angry-birds-png-29.png" type="image/x-icon">
+    <title>Angry Bird | S4JID</title>
+    <style>
+        body {
+            margin: 0;
+            background: #DED895;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+        }
+        #interface {
+            width: 100%;
+            text-align: center;
+            padding: 10px 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 15;
+        }
+        #score {
+            font-size: clamp(20px, 4vw, 28px);
+            color: #FFF;
+            text-shadow: 2px 2px 4px #000;
+            margin: 10px;
+            font-weight: bold;
+            display: inline-block;
+        }
+        #difficulty {
+            margin: 10px;
+            display: none;
+        }
+        #game-container {
+            position: relative;
+            width: 600px;
+            max-width: 90vw;
+            height: 60vh;
+            background: #70C5CE;
+            overflow: hidden;
+            border: 2px solid #000;
+            display: none;
+        }
+        .cloud {
+            position: absolute;
+            width: 15%;
+            height: 10%;
+            background: url('https://png.pngtree.com/png-vector/20221202/ourmid/pngtree-3d-white-clouds-illustration-png-image_6478630.png') no-repeat;
+            background-size: contain;
+            opacity: 0.8;
+            z-index: 1;
+            animation: moveCloud linear infinite;
+        }
+        @keyframes moveCloud {
+            from { left: 100%; }
+            to { left: -15%; }
+        }
+        #bird {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-size: contain;
+            transition: transform 0.2s ease;
+            z-index: 10;
+        }
+        #bird.flap {
+            transform: rotate(-20deg);
+        }
+        .pipe {
+            position: absolute;
+            width: 10%;
+            border: 2px solid #666; /* Darker metallic edge */
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.5); /* Subtle glow */
+            z-index: 5;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .pipe.top {
+            background: linear-gradient(to bottom, #B0BEC5, #78909C); /* Cool silver gradient */
+        }
+        .pipe.bottom {
+            background: linear-gradient(to top, #CFD8DC, #90A4AE); /* Warmer silver gradient */
+        }
+        .pipe.passed {
+            background: #FFD700; /* Gold when passed */
+            border-color: #FFB300;
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.7); /* Enhanced glow when passed */
+        }
+        #bird-selector {
+            margin: 20px;
+            text-align: center;
+        }
+        #bird-selector img {
+            width: clamp(40px, 8vw, 50px);
+            height: clamp(40px, 8vw, 50px);
+            margin: 10px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border 0.2s;
+        }
+        #bird-selector img:hover {
+            border: 2px solid #FF5722;
+        }
+        button {
+            padding: 5px 10px;
+            margin: 0 5px;
+            background: #FF5722;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: clamp(12px, 2vw, 14px);
+        }
+        button:hover {
+            background: #E64A19;
+        }
+        #game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            color: white;
+            display: none;
+            z-index: 20;
+        }
+        footer {
+            width: 100%;
+            background: #333;
+            padding: 20px 0;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            z-index: 15;
+        }
+        .social-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+        .created-by {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+            font-size: clamp(16px, 3vw, 24px);
+            color: #fff;
+            font-family: monospace;
+        }
+        .social-links a {
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+        .social-links a img {
+            width: clamp(24px, 5vw, 32px);
+            height: clamp(24px, 5vw, 32px);
+            filter: brightness(100%);
+        }
+        .social-links a:hover {
+            transform: scale(1.2);
+        }
+        @media (max-width: 600px) {
+            #game-container {
+                width: 100vw;
+                height: 50vh;
+            }
+            .pipe {
+                width: 15%;
+            }
+            #bird {
+                width: 30px;
+                height: 30px;
+            }
+            footer {
+                padding: 10px 0;
+            }
+            .social-links {
+                gap: 10px;
+            }
+            .created-by {
+                font-size: clamp(14px, 2.5vw, 18px);
+                margin-bottom: 5px;
+            }
+            .social-links a img {
+                width: clamp(20px, 4vw, 28px);
+                height: clamp(20px, 4vw, 28px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="interface">
+        <div id="score">0</div>
+        <div id="difficulty">
+            <button onclick="setDifficulty('easy')">Easy</button>
+            <button onclick="setDifficulty('normal')">Normal</button>
+            <button onclick="setDifficulty('hard')">Hard</button>
+        </div>
+    </div>
+    <div id="bird-selector">
+        <h2>Select Your Bird</h2>
+        <img src="https://www.freeiconspng.com/thumbs/birds-png/angry-birds-png-29.png" onclick="selectBird(this.src)">
+        <img src="https://www.pngplay.com/wp-content/uploads/11/Angry-Birds-Transparent-Clip-Art-PNG.png" onclick="selectBird(this.src)">
+        <img src="https://www.pngplay.com/wp-content/uploads/11/Angry-Birds-PNG-Background-Clip-Art.png" onclick="selectBird(this.src)">
+        <img src="https://www.freeiconspng.com/uploads/free-download-angry-birds-png-images-4.png" onclick="selectBird(this.src)">
+        <img src="https://www.pngplay.com/wp-content/uploads/11/Angry-Birds-PNG-Clipart-Background-HD.png" onclick="selectBird(this.src)">
+        <img src="https://www.pngarts.com/files/5/Angry-Birds-Pig-Transparent-Images.png" onclick="selectBird(this.src)">
+        <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/6c9eb347-7d8a-4eee-9480-b8cd35d08a2d/dfr7zb9-e9392fea-285e-426e-867b-1b5cf338bc69.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzZjOWViMzQ3LTdkOGEtNGVlZS05NDgwLWI4Y2QzNWQwOGEyZFwvZGZyN3piOS1lOTM5MmZlYS0yODVlLTQyNmUtODY3Yi0xYjVjZjMzOGJjNjkucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.AxVR7NCd0sZtjBJDeDs0NWDSS1ptM0DEkx5dEyACW4E" onclick="selectBird(this.src)">
+    </div>
+    <div id="game-container">
+        <div class="cloud" style="top: 10%; animation-duration: 10s;"></div>
+        <div class="cloud" style="top: 30%; animation-duration: 15s;"></div>
+        <div class="cloud" style="top: 50%; animation-duration: 12s;"></div>
+        <div id="bird"></div>
+        <div id="game-over">
+            <h2>Game Over</h2>
+            <p>Score: <span id="final-score">0</span></p>
+            <button onclick="restartGame()">Restart</button>
+        </div>
+    </div>
+    <footer>
+        <div class="social-links animate__animated animate__slideInUp">
+            <span class="created-by">Developed by S4JID | Find me</span><br>
+            <a href="https://x.com/SheikhSajid69" target="_blank" title="X">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/ce/X_logo_2023.svg" alt="X Logo">
+            </a>
+            <a href="https://instagram.com/the_sajidm69" target="_blank" title="Instagram">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram Logo">
+            </a>
+            <a href="https://github.com/sheikhsajid69" target="_blank" title="GitHub">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" alt="GitHub Logo">
+            </a>
+            <a href="https://linkedin.com/in/sheikh-sajid-m" target="_blank" title="LinkedIn">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn Logo">
+            </a>
+            <a href="https://medium.com/@sheikhsajid69.com" target="_blank" title="Medium">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/e/ec/Medium_logo_Monogram.svg" alt="Medium Logo">
+            </a>
+            <a href="mailto:sajidms1209@icloud.com" title="Mail">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Mail_%28iOS%29.svg" alt="Mail Logo">
+            </a>
+            <a href="https://open.spotify.com/user/316v53vlmm3zfjxoubogax3rwkom?si=507800f1184a4bea" target="_blank" title="Spotify">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg" alt="Spotify Logo">
+            </a>
+            <a href="https://topmate.io/sheikhsajid69" target="_blank" title="Topmate">
+                <img src="https://topmate.io/favicon.ico" alt="Topmate Logo" style="border-radius: 50%;">
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        const gameContainer = document.getElementById('game-container');
+        const bird = document.getElementById('bird');
+        const scoreDisplay = document.getElementById('score');
+        const gameOverScreen = document.getElementById('game-over');
+        const finalScore = document.getElementById('final-score');
+        const birdSelector = document.getElementById('bird-selector');
+        const difficulty = document.getElementById('difficulty');
+
+        let birdY = gameContainer.clientHeight / 2;
+        let velocity = 0;
+        let score = 0;
+        let pipes = [];
+        let gameActive = false;
+        let gravity = 0.35; // Medium gravity
+        let pipeSpeed = 1.5;
+        let pipeGap = 250;
+
+        const difficulties = {
+            easy: { pipeSpeed: 1.5, pipeGap: 250 },
+            normal: { pipeSpeed: 2, pipeGap: 200 },
+            hard: { pipeSpeed: 3, pipeGap: 150 }
+        };
+        let currentDifficulty = 'easy';
+
+        function setDifficulty(level) {
+            if (!gameActive) {
+                currentDifficulty = level;
+                pipeSpeed = difficulties[level].pipeSpeed;
+                pipeGap = difficulties[level].pipeGap;
+            }
+        }
+
+        function selectBird(birdUrl) {
+            bird.style.backgroundImage = `url('${birdUrl}')`;
+            bird.style.backgroundRepeat = 'no-repeat';
+            bird.style.backgroundSize = 'contain';
+            birdSelector.style.display = 'none';
+            gameContainer.style.display = 'block';
+            difficulty.style.display = 'inline-block';
+        }
+
+        function startGame() {
+            if (!gameActive) {
+                gameActive = true;
+                birdY = gameContainer.clientHeight / 2;
+                velocity = 0;
+                score = 0;
+                pipes = [];
+                scoreDisplay.textContent = `${score}`;
+                gameOverScreen.style.display = 'none';
+                generatePipe();
+                gameLoop();
+            }
+        }
+
+        function gameLoop() {
+            if (!gameActive) return;
+
+            velocity += gravity;
+            birdY += velocity;
+            bird.style.top = `${birdY}px`;
+            bird.style.transform = `rotate(${Math.min(velocity * 3, 30)}deg)`;
+
+            pipes.forEach(pipe => {
+                pipe.x -= pipeSpeed;
+                pipe.topPipe.style.left = `${pipe.x}px`;
+                pipe.bottomPipe.style.left = `${pipe.x}px`;
+
+                if (!pipe.passed && pipe.x + pipe.topPipe.clientWidth < bird.offsetLeft) {
+                    pipe.passed = true;
+                    score++;
+                    scoreDisplay.textContent = `${score}`;
+                    pipe.topPipe.classList.add('passed');
+                    pipe.bottomPipe.classList.add('passed');
+                    setTimeout(() => {
+                        pipe.topPipe.classList.remove('passed');
+                        pipe.bottomPipe.classList.remove('passed');
+                    }, 500);
+                }
+
+                if (checkCollision(pipe)) {
+                    endGame();
+                    return;
+                }
+            });
+
+            pipes = pipes.filter(pipe => pipe.x > -pipe.topPipe.clientWidth);
+
+            if (pipes.length && pipes[pipes.length - 1].x < gameContainer.clientWidth * 0.5) {
+                generatePipe();
+            }
+
+            if (birdY > gameContainer.clientHeight) {
+                endGame();
+                return;
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function generatePipe() {
+            const gapY = Math.random() * (gameContainer.clientHeight - pipeGap - 100) + 50;
+            const topHeight = gapY;
+            const bottomHeight = gameContainer.clientHeight - gapY - pipeGap;
+
+            const topPipe = document.createElement('div');
+            topPipe.className = 'pipe top';
+            topPipe.style.height = `${topHeight}px`;
+            topPipe.style.top = '0';
+            topPipe.style.left = `${gameContainer.clientWidth}px`;
+
+            const bottomPipe = document.createElement('div');
+            bottomPipe.className = 'pipe bottom';
+            bottomPipe.style.height = `${bottomHeight}px`;
+            bottomPipe.style.bottom = '0';
+            bottomPipe.style.left = `${gameContainer.clientWidth}px`;
+
+            gameContainer.appendChild(topPipe);
+            gameContainer.appendChild(bottomPipe);
+
+            pipes.push({
+                x: gameContainer.clientWidth,
+                topPipe,
+                bottomPipe,
+                passed: false,
+                gapY,
+                topHeight,
+                bottomHeight
+            });
+        }
+
+        function checkCollision(pipe) {
+            const birdRect = bird.getBoundingClientRect();
+            const topPipeRect = pipe.topPipe.getBoundingClientRect();
+            const bottomPipeRect = pipe.bottomPipe.getBoundingClientRect();
+
+            const birdHitsTop = birdRect.right > topPipeRect.left &&
+                               birdRect.left < topPipeRect.right &&
+                               birdRect.top < topPipeRect.bottom;
+            const birdHitsBottom = birdRect.right > bottomPipeRect.left &&
+                                  birdRect.left < bottomPipeRect.right &&
+                                  birdRect.bottom > bottomPipeRect.top;
+
+            return birdHitsTop || birdHitsBottom;
+        }
+
+        function endGame() {
+            gameActive = false;
+            finalScore.textContent = score;
+            gameOverScreen.style.display = 'block';
+            pipes.forEach(pipe => {
+                gameContainer.removeChild(pipe.topPipe);
+                gameContainer.removeChild(pipe.bottomPipe);
+            });
+        }
+
+        function restartGame() {
+            startGame();
+        }
+
+        function flap() {
+            if (gameActive) {
+                bird.classList.add('flap');
+                setTimeout(() => bird.classList.remove('flap'), 200);
+                velocity = -10; // Medium flap strength
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                if (!gameActive) startGame();
+                else flap();
+            }
+        });
+
+        bird.style.left = '20px';
+        bird.style.top = `${birdY}px`;
+    </script>
+</body>
+</html>

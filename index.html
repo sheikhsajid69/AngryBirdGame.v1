@@ -14,8 +14,8 @@
             align-items: center;
             font-family: 'Arial', sans-serif;
             height: 100vh;
-            overflow: hidden; /* Prevent scrolling */
-            touch-action: none; /* Prevent default touch behaviors like pinch-zoom */
+            overflow: hidden;
+            touch-action: none;
         }
         #interface {
             width: 100%;
@@ -40,12 +40,12 @@
             position: relative;
             width: 600px;
             max-width: 90vw;
-            height: 60vh;
+            height: 600px;
             background: #70C5CE;
             overflow: hidden;
             border: 2px solid #000;
             display: none;
-            touch-action: none; /* Ensure touch events work within container */
+            touch-action: none;
         }
         .cloud {
             position: absolute;
@@ -265,12 +265,12 @@
         const birdSelector = document.getElementById('bird-selector');
         const difficulty = document.getElementById('difficulty');
 
-        let birdY = gameContainer.clientHeight / 2;
+        let birdY; // Initialize later when container is visible
         let velocity = 0;
         let score = 0;
         let pipes = [];
         let gameActive = false;
-        let gravity = 0.35;
+        let gravity = 0.4;
         let pipeSpeed = 1.5;
         let pipeGap = 250;
 
@@ -294,8 +294,11 @@
             bird.style.backgroundRepeat = 'no-repeat';
             bird.style.backgroundSize = 'contain';
             birdSelector.style.display = 'none';
-            gameContainer.style.display = 'block';
+            gameContainer.style.display = 'block'; // Make container visible
             difficulty.style.display = 'inline-block';
+            birdY = gameContainer.clientHeight / 2; // Set birdY after container is visible
+            bird.style.top = `${birdY}px`; // Update bird position
+            bird.style.left = '20px'; // Ensure bird is positioned
         }
 
         function startGame() {
@@ -349,7 +352,7 @@
                 generatePipe();
             }
 
-            if (birdY > gameContainer.clientHeight) {
+            if (birdY > gameContainer.clientHeight || birdY < 0) {
                 endGame();
                 return;
             }
@@ -421,7 +424,7 @@
             if (gameActive) {
                 bird.classList.add('flap');
                 setTimeout(() => bird.classList.remove('flap'), 200);
-                velocity = -10;
+                velocity = -11;
             }
         }
 
@@ -436,19 +439,12 @@
 
         // Touch input for mobile
         gameContainer.addEventListener('touchstart', (e) => {
-            e.preventDefault(); // Prevent scrolling or zooming
+            e.preventDefault();
             if (!gameActive) startGame();
             else flap();
         });
 
         bird.style.left = '20px';
-        bird.style.top = `${birdY}px`;
-
-        gameContainer.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    if (!gameActive) startGame();
-    else flap();
-});
     </script>
 </body>
 </html>

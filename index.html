@@ -8,7 +8,6 @@
     <style>
         body {
             margin: 0;
-            background: #DED895;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -16,6 +15,17 @@
             height: 100vh;
             overflow: hidden;
             touch-action: none;
+            width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+      -45deg,
+      orange,
+      orangered 10px,
+      orange 10px,
+      orangered 20px
+    )
+    orange;
+  background-blend-mode: screen;
         }
         #interface {
             width: 100%;
@@ -33,19 +43,22 @@
             display: inline-block;
         }
         #difficulty {
-            margin: 10px;
+            margin: 20px;
+            text-align: center;
             display: none;
         }
         #game-container {
             position: relative;
-            width: 600px;
-            max-width: 90vw;
-            height: 60vh;
+            width: 800px;
+            max-width: 95vw;
+            height: 70vh;
+            max-height: 80vh;
             background: #70C5CE;
             overflow: hidden;
             border: 2px solid #000;
             display: none;
             touch-action: none;
+            margin: auto;
         }
         .cloud {
             position: absolute;
@@ -94,7 +107,7 @@
         #bird-selector {
             margin: 20px;
             text-align: center;
-            display: none; /* Hidden until passcode is correct */
+            display: none;
         }
         #bird-selector img {
             width: clamp(40px, 8vw, 50px);
@@ -102,19 +115,21 @@
             margin: 10px;
             cursor: pointer;
             border: 2px solid transparent;
+            border-radius: 7px;
+            box-shadow: 1.5px black;
             transition: border 0.2s;
         }
         #bird-selector img:hover {
             border: 2px solid #FF5722;
         }
         button {
-            padding: 5px 10px;
-            margin: 0 5px;
+            padding: 8px 15px;
+            margin: 0 10px;
             background: #FF5722;
             color: white;
             border: none;
             cursor: pointer;
-            font-size: clamp(12px, 2vw, 14px);
+            font-size: clamp(14px, 2.5vw, 16px);
         }
         button:hover {
             background: #E64A19;
@@ -134,7 +149,7 @@
         footer {
             width: 100%;
             background: #333;
-            padding: 20px 0;
+            padding: 10px 0; /* Reduced padding for smaller height */
             text-align: center;
             position: fixed;
             bottom: 0;
@@ -146,13 +161,12 @@
             flex-wrap: wrap;
             justify-content: center;
             align-items: center;
-            gap: 15px;
+            gap: 10px; /* Reduced gap for compactness */
         }
         .created-by {
-            display: block;
-            width: 100%;
-            margin-bottom: 10px;
-            font-size: clamp(16px, 3vw, 24px);
+            display: inline; /* Inline with social links */
+            margin: 0 10px 0 0; /* Margin to separate from icons, no bottom margin */
+            font-size: clamp(12px, 2vw, 16px); /* Smaller font size */
             color: #fff;
             font-family: monospace;
         }
@@ -161,8 +175,8 @@
             transition: transform 0.3s ease;
         }
         .social-links a img {
-            width: clamp(24px, 5vw, 32px);
-            height: clamp(24px, 5vw, 32px);
+            width: clamp(20px, 4vw, 24px); /* Smaller icons */
+            height: clamp(20px, 4vw, 24px);
             filter: brightness(100%);
         }
         .social-links a:hover {
@@ -171,7 +185,7 @@
         @media (max-width: 600px) {
             #game-container {
                 width: 100vw;
-                height: 50vh;
+                height: 60vh;
             }
             .pipe {
                 width: 15%;
@@ -181,18 +195,18 @@
                 height: 30px;
             }
             footer {
-                padding: 10px 0;
+                padding: 8px 0; /* Even smaller on mobile */
             }
             .social-links {
-                gap: 10px;
+                gap: 8px;
             }
             .created-by {
-                font-size: clamp(14px, 2.5vw, 18px);
-                margin-bottom: 5px;
+                font-size: clamp(10px, 1.5vw, 14px);
+                margin-right: 8px;
             }
             .social-links a img {
-                width: clamp(20px, 4vw, 28px);
-                height: clamp(20px, 4vw, 28px);
+                width: clamp(16px, 3vw, 20px);
+                height: clamp(16px, 3vw, 20px);
             }
         }
     </style>
@@ -201,9 +215,10 @@
     <div id="interface">
         <div id="score">0</div>
         <div id="difficulty">
-            <button onclick="setDifficulty('easy')">Easy</button>
-            <button onclick="setDifficulty('normal')">Normal</button>
-            <button onclick="setDifficulty('hard')">Hard</button>
+            <h2>Choose Difficulty</h2>
+            <button onclick="setDifficulty('easy'); startGame();">Easy</button>
+            <button onclick="setDifficulty('normal'); startGame();">Normal</button>
+            <button onclick="setDifficulty('hard'); startGame();">Hard</button>
         </div>
     </div>
     <div id="bird-selector">
@@ -214,13 +229,15 @@
         <img src="https://www.freeiconspng.com/uploads/free-download-angry-birds-png-images-4.png" onclick="selectBird(this.src)">
         <img src="https://www.pngplay.com/wp-content/uploads/11/Angry-Birds-PNG-Clipart-Background-HD.png" onclick="selectBird(this.src)">
         <img src="https://www.pngarts.com/files/5/Angry-Birds-Pig-Transparent-Images.png" onclick="selectBird(this.src)">
-                <img src="https://www.pngplay.com/wp-content/uploads/11/Angry-Birds-Background-PNG.png" onclick="selectBird(this.src)">
-                        <img src="https://mediaresource.sfo2.digitaloceanspaces.com/wp-content/uploads/2024/04/22094952/angry-bird-logo-47ECD10683-seeklogo.com.png" onclick="selectBird(this.src)">
-                                <img src="https://www.angrybirds.com/wp-content/uploads/2022/05/ABCOM_202203_1000x1000_CharacterDimensio_Bubbles_Classic.png" onclick="selectBird(this.src)">
-
-
-
+        <img src="https://www.pngplay.com/wp-content/uploads/11/Angry-Birds-Background-PNG.png" onclick="selectBird(this.src)">
+        <img src="https://mediaresource.sfo2.digitaloceanspaces.com/wp-content/uploads/2024/04/22094952/angry-bird-logo-47ECD10683-seeklogo.com.png" onclick="selectBird(this.src)">
+        <img src="https://www.angrybirds.com/wp-content/uploads/2022/05/ABCOM_202203_1000x1000_CharacterDimensio_Bubbles_Classic.png" onclick="selectBird(this.src)">
+        <img src="https://static.wikia.nocookie.net/angrybirds/images/f/fa/TerenceABClassic.png/revision/latest?cb=20250203201739" onclick="selectBird(this.src)">
+        <img src="https://static.wikia.nocookie.net/angrybirds/images/b/ba/YellowBird.png/revision/latest/scale-to-width/360?cb=20250130225817&path-prefix=es" onclick="selectBird(this.src)">
         <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/6c9eb347-7d8a-4eee-9480-b8cd35d08a2d/dfr7zb9-e9392fea-285e-426e-867b-1b5cf338bc69.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzZjOWViMzQ3LTdkOGEtNGVlZS05NDgwLWI4Y2QzNWQwOGEyZFwvZGZyN3piOS1lOTM5MmZlYS0yODVlLTQyNmUtODY3Yi0xYjVjZjMzOGJjNjkucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.AxVR7NCd0sZtjBJDeDs0NWDSS1ptM0DEkx5dEyACW4E" onclick="selectBird(this.src)">
+        <img src="https://static.wikia.nocookie.net/angrybirdsfanon/images/3/3f/BrownBirdArtwork.png/revision/latest?cb=20140330200630" onclick="selectBird(this.src)">
+        <img src="https://www.pngplay.com/wp-content/uploads/11/Angry-Birds-Transparent-Images.png" onclick="selectBird(this.src)">
+
     </div>
     <div id="game-container">
         <div class="cloud" style="top: 10%; animation-duration: 10s;"></div>
@@ -235,9 +252,12 @@
     </div>
     <footer>
         <div class="social-links animate__animated animate__slideInUp">
-            <span class="created-by">Developed by S4JID | Find me</span><br>
+            <span class="created-by">Developed by S4JID | Find me</span>
             <a href="https://x.com/SheikhSajid69" target="_blank" title="X">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/c/ce/X_logo_2023.svg" alt="X Logo">
+            </a>
+            <a href="https://instagram.com/the_sajidm69" target="_blank" title="Instagram">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram Logo">
             </a>
             <a href="https://github.com/sheikhsajid69" target="_blank" title="GitHub">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" alt="GitHub Logo">
@@ -291,10 +311,10 @@
         function checkPasscode() {
             let userInput = prompt("Please enter the passcode to play the game:");
             if (userInput === correctPasscode) {
-                birdSelector.style.display = 'block'; // Show bird selector if passcode is correct
+                birdSelector.style.display = 'block';
             } else {
                 alert("Incorrect passcode! Please try again.");
-                checkPasscode(); // Recursively prompt until correct
+                checkPasscode();
             }
         }
 
@@ -302,11 +322,10 @@
         window.onload = checkPasscode;
 
         function setDifficulty(level) {
-            if (!gameActive) {
-                currentDifficulty = level;
-                pipeSpeed = difficulties[level].pipeSpeed;
-                pipeGap = difficulties[level].pipeGap;
-            }
+            currentDifficulty = level;
+            pipeSpeed = difficulties[level].pipeSpeed;
+            pipeGap = difficulties[level].pipeGap;
+            difficulty.style.display = 'none';
         }
 
         function selectBird(birdUrl) {
@@ -315,10 +334,10 @@
             bird.style.backgroundSize = 'contain';
             birdSelector.style.display = 'none';
             gameContainer.style.display = 'block';
-            difficulty.style.display = 'inline-block';
             birdY = gameContainer.clientHeight / 2;
             bird.style.top = `${birdY}px`;
             bird.style.left = '20px';
+            difficulty.style.display = 'block';
         }
 
         function startGame() {
@@ -372,7 +391,7 @@
                 generatePipe();
             }
 
-            if (birdY > gameContainer.clientHeight || birdY < 0) {
+            if (birdY > gameContainer.clientHeight) {
                 endGame();
                 return;
             }
@@ -437,7 +456,9 @@
         }
 
         function restartGame() {
-            startGame();
+            difficulty.style.display = 'block';
+            gameContainer.style.display = 'block';
+            gameOverScreen.style.display = 'none';
         }
 
         function flap() {
@@ -452,16 +473,22 @@
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Space') {
                 e.preventDefault();
-                if (!gameActive) startGame();
-                else flap();
+                if (!gameActive && gameContainer.style.display === 'block' && difficulty.style.display === 'none') {
+                    startGame();
+                } else {
+                    flap();
+                }
             }
         });
 
         // Touch input for mobile
         gameContainer.addEventListener('touchstart', (e) => {
             e.preventDefault();
-            if (!gameActive) startGame();
-            else flap();
+            if (!gameActive && gameContainer.style.display === 'block' && difficulty.style.display === 'none') {
+                startGame();
+            } else {
+                flap();
+            }
         });
 
         bird.style.left = '20px';
